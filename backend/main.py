@@ -58,4 +58,5 @@ async def root():
     return {"message": "Welcome to Daily Action Hub API"}
 
 if __name__ == "__main__":
+    print(f"Starting server on 0.0.0.0:{settings.PORT}")
     uvicorn.run("backend.main:app", host="0.0.0.0", port=settings.PORT, reload=True)
