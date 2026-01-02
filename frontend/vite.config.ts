@@ -7,6 +7,7 @@ export default defineConfig(() => ({
   server: {
     host: "::",
     port: 5137,
+    allowedHosts: ["dancing-mantis-snore.onrender.com"],
   },
   plugins: [dyadComponentTagger(), react()],
   resolve: {
