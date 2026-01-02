@@ -1,7 +1,7 @@
 import httpx
 from datetime import datetime, time, timedelta
 import logging
-from ..database import settings
+from ..database.client import settings
 
 logger = logging.getLogger(__name__)
 

@@ -3,9 +3,9 @@ from typing import List, Optional
 from datetime import datetime
 from bson import ObjectId
 
-from ..database import get_database
-from ..models import UserInDB, NextStep, NextStepCreate, NextStepUpdate, NextStepInDB, NextStepStatus
-from ..auth import get_current_user
+from ..database.client import get_database
+from ..models.schemas import UserInDB, NextStep, NextStepCreate, NextStepUpdate, NextStepInDB, NextStepStatus
+from ..security.auth import get_current_user
 from ..services.google_calendar import refresh_google_token
 from ..services.gmail import create_draft
 

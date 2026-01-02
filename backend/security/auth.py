@@ -3,8 +3,8 @@ from typing import Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-from .database import settings, get_database
-from .models import TokenData, UserInDB
+from ..database.client import settings, get_database
+from ..models.schemas import TokenData, UserInDB
 
 # We use OAuth2PasswordBearer to define the scheme, so FastAPI knows to look for
 # the token in the Authorization header (Bearer token).

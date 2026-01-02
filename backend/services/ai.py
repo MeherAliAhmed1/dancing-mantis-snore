@@ -2,7 +2,7 @@ import openai
 import json
 import logging
 from typing import List
-from ..database import settings
+from ..database.client import settings
 
 logger = logging.getLogger(__name__)
 

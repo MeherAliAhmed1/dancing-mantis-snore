@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from typing import List, Optional
 from datetime import datetime, time, date, timedelta
 from bson import ObjectId
-from ..database import get_database
-from ..models import UserInDB, Meeting, MeetingInDB, NextStep, NextStepInDB, NextStepStatus, MeetingUpdate
-from ..auth import get_current_user
+from ..database.client import get_database
+from ..models.schemas import UserInDB, Meeting, MeetingInDB, NextStep, NextStepInDB, NextStepStatus, MeetingUpdate
+from ..security.auth import get_current_user
 from ..services.google_calendar import refresh_google_token, fetch_calendar_events, is_online_meeting
 from ..services.ai import generate_next_steps
 

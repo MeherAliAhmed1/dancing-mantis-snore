@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: Optional[str] = os.getenv("OPENAI_API_KEY")
 
     class Config:
-        env_file = os.path.join(os.path.dirname(__file__), ".env")
+        env_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")
 
 settings = Settings()
 

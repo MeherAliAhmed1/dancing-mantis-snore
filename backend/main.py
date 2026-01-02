@@ -1,7 +1,7 @@
 from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from .database import db
+from .database.client import db
 from .routers import auth, users, meetings, next_steps
 
 @asynccontextmanager

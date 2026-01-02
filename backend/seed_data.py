@@ -1,7 +1,7 @@
 import asyncio
 from datetime import datetime, timedelta
-from database import db, settings
-from models import UserInDB, MeetingInDB, NextStepInDB, NextStepStatus
+from database.client import db, settings
+from models.schemas import UserInDB, MeetingInDB, NextStepInDB, NextStepStatus
 import os
 
 # Ensure we use the real DB

@@ -1,6 +1,6 @@
 import asyncio
-from database import db, settings
-from models import UserInDB
+from database.client import db, settings
+from models.schemas import UserInDB
 import os
 from datetime import datetime, timedelta, time
 

@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import RedirectResponse
 import httpx
-from ..database import settings, get_database
-from ..models import UserInDB
-from ..auth import create_access_token
+from ..database.client import settings, get_database
+from ..models.schemas import UserInDB
+from ..security.auth import create_access_token
 from datetime import datetime
 
 router = APIRouter(
