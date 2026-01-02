@@ -26,6 +26,7 @@ origins = [
     "http://127.0.0.1:5137",
     "http://localhost:5138",
     "http://127.0.0.1:5138",
+    "https://dancing-mantis-snore.onrender.com",
 ]
 
 app.add_middleware(

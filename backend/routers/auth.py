@@ -16,7 +16,7 @@ async def login_google():
     # For MVP simplicity, always redirect to the dev callback
     # This ensures anyone clicking "Continue with Google" gets logged in immediately
     return {
-        "url": "http://localhost:8000/api/v1/auth/dev/callback"
+        "url": "https://dancing-mantis-snore-backend.onrender.com/api/v1/auth/dev/callback"
     }
 
 @router.get("/dev/callback")
@@ -53,7 +53,7 @@ async def dev_callback():
     
     # Redirect to frontend (assuming port 5138 based on previous steps, but could be 5137)
     # We'll try 5138 since that was the active one
-    frontend_url = "http://localhost:5137/auth/callback"
+    frontend_url = "https://dancing-mantis-snore.onrender.com/auth/callback"
     return RedirectResponse(url=f"{frontend_url}?token={access_token}")
 
 @router.get("/google/callback")
@@ -118,5 +118,5 @@ async def auth_google(code: str):
     
     # Redirect to frontend with token
     # Adjust this URL based on where the frontend handles the callback
-    frontend_url = "http://localhost:5137/auth/callback"
+    frontend_url = "https://dancing-mantis-snore.onrender.com/auth/callback"
     return RedirectResponse(url=f"{frontend_url}?token={access_token}")
