@@ -6,6 +6,7 @@ from typing import Optional, Any
 class Settings(BaseSettings):
     MONGODB_URI: str = os.getenv("MONGODB_URI", "mongodb://localhost:27017/daily_action_hub")
     APP_ENV: str = os.getenv("APP_ENV", "development")
+    PORT: int = int(os.getenv("PORT", 5000))
     
     # Google OAuth
     GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID", "")

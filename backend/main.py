@@ -1,7 +1,8 @@
+import uvicorn
 from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from .database.client import db
+from .database.client import db, settings
 from .routers import auth, users, meetings, next_steps
 
 @asynccontextmanager
@@ -55,3 +56,6 @@ async def health_check():
 @app.get("/")
 async def root():
     return {"message": "Welcome to Daily Action Hub API"}
+
+if __name__ == "__main__":
+    uvicorn.run("backend.main:app", host="0.0.0.0", port=settings.PORT, reload=True)
