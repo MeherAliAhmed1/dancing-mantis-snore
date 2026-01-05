@@ -26,6 +26,8 @@ api.interceptors.request.use(
 export const auth = {
   getGoogleUrl: () => api.get('/auth/google/url'),
   me: () => api.get('/users/me'),
+  login: (data: any) => api.post('/auth/login', data),
+  register: (data: any) => api.post('/auth/register', data),
 };
 
 export const meetings = {

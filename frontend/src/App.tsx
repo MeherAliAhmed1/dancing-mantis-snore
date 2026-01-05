@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import { LoginPage } from "./pages/Login";
+import { RegisterPage } from "./pages/Register";
 import { AuthCallback } from "./pages/AuthCallback";
 import { SettingsPage } from "./pages/SettingsPage"; // Import SettingsPage
 import { AuthContextProvider, useAuth } from "./contexts/AuthContext";
@@ -35,6 +36,7 @@ const AppContent = () => {
       {isLoggedIn && <Header notificationCount={notificationCount} />} {/* Pass notificationCount to Header */}
       <Routes>
         <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/register" element={isLoggedIn ? <Navigate to="/dashboard" replace /> : <RegisterPage />} />
         <Route path="/login" element={isLoggedIn ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
         <Route
           path="/dashboard"

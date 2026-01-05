@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import RedirectResponse
 import httpx
 from ..database.client import settings, get_database
-from ..models.schemas import UserInDB
-from ..security.auth import create_access_token
+from ..models.schemas import UserInDB, UserCreate, UserLogin
+from ..security.auth import create_access_token, get_password_hash, verify_password
 from datetime import datetime
 
 router = APIRouter(
@@ -11,50 +11,55 @@ router = APIRouter(
     tags=["auth"],
 )
 
-@router.get("/google/url")
-async def login_google():
-    # For MVP simplicity, always redirect to the dev callback
-    # This ensures anyone clicking "Continue with Google" gets logged in immediately
-    return {
-        "url": "https://dancing-mantis-snore-backend.onrender.com/api/v1/auth/dev/callback"
-    }
-
-@router.get("/dev/callback")
-async def dev_callback():
-    """Mock callback for development without real Google Credentials"""
-    
-    user_info = {
-        "email": "testuser@example.com",
-        "id": "dev-dummy-google-id",
-        "name": "Test User",
-        "picture": "https://via.placeholder.com/150"
-    }
-    
+@router.post("/register", status_code=status.HTTP_201_CREATED)
+async def register(user: UserCreate):
     db = await get_database()
-    existing_user = await db.users.find_one({"email": user_info["email"]})
+    existing_user = await db.users.find_one({"email": user.email})
     
     if existing_user:
-        await db.users.update_one(
-            {"email": user_info["email"]},
-            {"$set": {"updated_at": datetime.utcnow()}}
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered"
         )
-    else:
-        new_user = UserInDB(
-            email=user_info["email"],
-            google_id=user_info["id"],
-            full_name=user_info["name"],
-            picture=user_info["picture"],
-            refresh_token="dummy_refresh_token"
-        )
-        user_dict = new_user.model_dump(by_alias=True, exclude={"id"})
-        await db.users.insert_one(user_dict)
-        
-    access_token = create_access_token(data={"sub": user_info["email"]})
     
-    # Redirect to frontend (assuming port 5138 based on previous steps, but could be 5137)
-    # We'll try 5138 since that was the active one
-    frontend_url = "https://dancing-mantis-snore.onrender.com/auth/callback"
-    return RedirectResponse(url=f"{frontend_url}?token={access_token}")
+    hashed_password = get_password_hash(user.password)
+    new_user = UserInDB(
+        email=user.email,
+        full_name=user.full_name,
+        picture=user.picture,
+        hashed_password=hashed_password,
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow()
+    )
+    
+    # We exclude 'id' because MongoDB will generate '_id'
+    user_dict = new_user.model_dump(by_alias=True, exclude={"id"})
+    await db.users.insert_one(user_dict)
+    
+    # Auto-login after registration
+    access_token = create_access_token(data={"sub": new_user.email})
+    return {"access_token": access_token, "token_type": "bearer"}
+
+@router.post("/login")
+async def login(user_credentials: UserLogin):
+    db = await get_database()
+    user = await db.users.find_one({"email": user_credentials.email})
+    
+    if not user or not user.get("hashed_password") or not verify_password(user_credentials.password, user["hashed_password"]):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    access_token = create_access_token(data={"sub": user["email"]})
+    return {"access_token": access_token, "token_type": "bearer"}
+@router.get("/google/url")
+async def login_google():
+    return {
+        "url": f"https://accounts.google.com/o/oauth2/auth?response_type=code&client_id={settings.GOOGLE_CLIENT_ID}&redirect_uri={settings.GOOGLE_REDIRECT_URI}&scope=openid%20profile%20email&access_type=offline"
+    }
+
 
 @router.get("/google/callback")
 async def auth_google(code: str):

@@ -6,7 +6,9 @@ interface AuthContextType {
   isLoggedIn: boolean;
   user: User | null;
   isLoading: boolean;
-  login: () => Promise<void>;
+  login: (data: any) => Promise<void>;
+  register: (data: any) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
   logout: () => void;
   updateUserIntegrations: (integrations: Partial<User>) => void;
 }
@@ -50,7 +52,19 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const login = async () => {
+  const login = async (data: any) => {
+    const response = await auth.login(data);
+    localStorage.setItem('token', response.data.access_token);
+    await fetchUser();
+  };
+
+  const register = async (data: any) => {
+    const response = await auth.register(data);
+    localStorage.setItem('token', response.data.access_token);
+    await fetchUser();
+  };
+
+  const loginWithGoogle = async () => {
     try {
       const response = await auth.getGoogleUrl();
       window.location.href = response.data.url;
@@ -73,7 +87,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, user, isLoading, login, logout, updateUserIntegrations }}>
+    <AuthContext.Provider value={{ isLoggedIn, user, isLoading, login, register, loginWithGoogle, logout, updateUserIntegrations }}>
       {children}
     </AuthContext.Provider>
   );
