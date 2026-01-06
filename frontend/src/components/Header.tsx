@@ -40,7 +40,7 @@ export const Header: React.FC<HeaderProps> = ({ notificationCount }) => {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-9 w-9 rounded-full">
                 <Avatar className="h-9 w-9">
-                  <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.name}`} alt={user.name} />
+                  <AvatarImage src={`${import.meta.env.VITE_AVATAR_API_URL}?seed=${user.name}`} alt={user.name} />
                   <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
                 </Avatar>
               </Button>

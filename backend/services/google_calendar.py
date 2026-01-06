@@ -9,7 +9,7 @@ async def refresh_google_token(refresh_token: str) -> str:
     """
     Exchanges a refresh token for a new access token.
     """
-    token_url = "https://oauth2.googleapis.com/token"
+    token_url = settings.GOOGLE_TOKEN_URL
     data = {
         "client_id": settings.GOOGLE_CLIENT_ID,
         "client_secret": settings.GOOGLE_CLIENT_SECRET,
@@ -56,7 +56,7 @@ async def fetch_calendar_events(access_token: str, date: datetime = None):
     start_of_day = datetime.combine(date, time.min).isoformat() + "Z"
     end_of_day = datetime.combine(date, time.max).isoformat() + "Z"
     
-    url = "https://www.googleapis.com/calendar/v3/calendars/primary/events"
+    url = settings.GOOGLE_CALENDAR_EVENTS_URL
     params = {
         "timeMin": start_of_day,
         "timeMax": end_of_day,

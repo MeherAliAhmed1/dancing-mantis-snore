@@ -4,22 +4,35 @@ from pydantic_settings import BaseSettings
 from typing import Optional, Any
 
 class Settings(BaseSettings):
-    MONGODB_URI: str = os.getenv("MONGODB_URI", "mongodb://localhost:27017/daily_action_hub")
-    APP_ENV: str = os.getenv("APP_ENV", "development")
-    PORT: int = int(os.getenv("PORT", 5000))
+    MONGODB_URI: str
+    APP_ENV: str
+    PORT: int
     
     # Google OAuth
-    GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID", "")
-    GOOGLE_CLIENT_SECRET: str = os.getenv("GOOGLE_CLIENT_SECRET", "")
-    GOOGLE_REDIRECT_URI: str = os.getenv("GOOGLE_REDIRECT_URI", "https://dancing-mantis-snore-backend.onrender.com/api/v1/auth/google/callback")
+    GOOGLE_CLIENT_ID: str
+    GOOGLE_CLIENT_SECRET: str
+    GOOGLE_REDIRECT_URI: str
     
+    # Frontend
+    FRONTEND_URL: str
+    CORS_ORIGINS: str
+    CORS_ALLOW_METHODS: str = "GET,POST,PUT,DELETE,OPTIONS,PATCH"
+    CORS_ALLOW_HEADERS: str = "Content-Type,Authorization"
+
     # JWT
-    JWT_SECRET: str = os.getenv("JWT_SECRET", "secret")
-    JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "HS256")
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
+    JWT_SECRET: str
+    JWT_ALGORITHM: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
 
     # AI
-    OPENAI_API_KEY: Optional[str] = os.getenv("OPENAI_API_KEY")
+    OPENAI_API_KEY: Optional[str] = None
+
+    # External Services
+    GOOGLE_TOKEN_URL: str
+    GOOGLE_CALENDAR_EVENTS_URL: str
+    GOOGLE_GMAIL_DRAFTS_URL: str
+    GOOGLE_AUTH_URL: str
+    GOOGLE_USER_INFO_URL: str
 
     class Config:
         env_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")

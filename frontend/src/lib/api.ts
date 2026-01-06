@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://dancing-mantis-snore-backend.onrender.com/api/v1';
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const api = axios.create({
   baseURL: API_URL,
@@ -31,6 +31,7 @@ export const auth = {
 };
 
 export const meetings = {
+  create: (data: any) => api.post('/meetings/create', data),
   sync: () => api.post('/meetings/sync'),
   list: (date?: string) => {
     const params: any = {};

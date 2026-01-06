@@ -19,15 +19,16 @@ app = FastAPI(
 )
 
 # CORS Configuration
-# We use allow_origin_regex to match localhost ports and the production domain robustly
-origin_regex = r"https?://(localhost|127\.0\.0\.1|.*\.onrender\.com)(:\d+)?"
+origins = settings.CORS_ORIGINS.split(",")
+methods = settings.CORS_ALLOW_METHODS.split(",")
+headers = settings.CORS_ALLOW_HEADERS.split(",")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex=origin_regex,
+    allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=methods,
+    allow_headers=headers,
 )
 
 app.include_router(auth.router, prefix="/api/v1")

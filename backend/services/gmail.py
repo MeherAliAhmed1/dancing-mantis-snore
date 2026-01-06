@@ -4,6 +4,7 @@ from typing import List
 import base64
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from ..database.client import settings
 
 logger = logging.getLogger(__name__)
 
@@ -11,7 +12,7 @@ async def create_draft(access_token: str, recipients: List[str], subject: str, b
     """
     Creates a draft email in the user's Gmail account.
     """
-    url = "https://gmail.googleapis.com/gmail/v1/users/me/drafts"
+    url = settings.GOOGLE_GMAIL_DRAFTS_URL
     
     # Construct MIME message
     message = MIMEMultipart()

@@ -4,6 +4,7 @@ import { mockUser } from '@/data/mockData';
 import { meetings as meetingsApi, nextSteps as nextStepsApi } from '@/lib/api';
 import MeetingCard from '@/components/MeetingCard';
 import NextStepItem from '@/components/NextStepItem';
+import CreateMeetingModal from '@/components/CreateMeetingModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -26,6 +27,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNotificationCountChange }) => {
   const [newNextStepText, setNewNextStepText] = useState('');
   const [activeManualInputMeetingId, setActiveManualInputMeetingId] = useState<string | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isCreateMeetingModalOpen, setIsCreateMeetingModalOpen] = useState(false);
   const [lastSyncedTime, setLastSyncedTime] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -165,6 +167,17 @@ const Dashboard: React.FC<DashboardProps> = ({ onNotificationCountChange }) => {
     }
   };
 
+  const handleCreateMeeting = async (meetingData: any) => {
+    try {
+      await meetingsApi.create(meetingData);
+      showSuccess("Meeting created successfully!");
+      fetchData();
+    } catch (error) {
+      console.error("Failed to create meeting", error);
+      showSuccess("Failed to create meeting");
+    }
+  };
+
   const filteredMeetingsAndNextSteps = useMemo(() => {
     if (!searchQuery) {
       return { filteredMeetings: meetings, filteredNextSteps: nextSteps };
@@ -237,6 +250,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onNotificationCountChange }) => {
             {lastSyncedTime && (
               <span className="text-sm text-muted-foreground">Last synced: {lastSyncedTime}</span>
             )}
+            <Button onClick={() => setIsCreateMeetingModalOpen(true)} className="mr-2">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Create Meeting
+            </Button>
             <Button onClick={handleSyncCalendar} disabled={isSyncing} variant="outline">
               {isSyncing ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -247,6 +264,12 @@ const Dashboard: React.FC<DashboardProps> = ({ onNotificationCountChange }) => {
             </Button>
           </div>
         </div>
+
+        <CreateMeetingModal
+          isOpen={isCreateMeetingModalOpen}
+          onClose={() => setIsCreateMeetingModalOpen(false)}
+          onSubmit={handleCreateMeeting}
+        />
 
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="flex-1 min-w-0">

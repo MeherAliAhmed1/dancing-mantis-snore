@@ -3,7 +3,7 @@ from typing import List, Optional
 from datetime import datetime, time, date, timedelta
 from bson import ObjectId
 from ..database.client import get_database
-from ..models.schemas import UserInDB, Meeting, MeetingInDB, NextStep, NextStepInDB, NextStepStatus, MeetingUpdate
+from ..models.schemas import UserInDB, Meeting, MeetingInDB, NextStep, NextStepInDB, NextStepStatus, MeetingUpdate, MeetingCreate
 from ..security.auth import get_current_user
 from ..services.google_calendar import refresh_google_token, fetch_calendar_events, is_online_meeting
 from ..services.ai import generate_next_steps
@@ -12,6 +12,26 @@ router = APIRouter(
     prefix="/meetings",
     tags=["meetings"],
 )
+
+@router.post("/create", response_model=Meeting)
+async def create_meeting(
+    meeting_data: MeetingCreate,
+    current_user: UserInDB = Depends(get_current_user),
+    db = Depends(get_database)
+):
+    new_meeting = MeetingInDB(
+        user_id=str(current_user.id),
+        **meeting_data.model_dump(),
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow()
+    )
+    
+    result = await db.meetings.insert_one(
+        new_meeting.model_dump(by_alias=True, exclude={"id"})
+    )
+    
+    created_meeting = await db.meetings.find_one({"_id": result.inserted_id})
+    return created_meeting
 
 @router.post("/sync")
 async def sync_meetings(

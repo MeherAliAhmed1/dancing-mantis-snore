@@ -30,20 +30,25 @@ class UserInDB(User):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
-class Meeting(BaseModel):
-    model_config = ConfigDict(populate_by_name=True)
-    id: Optional[PyObjectId] = Field(alias="_id", serialization_alias="id", default=None)
-    user_id: str
-    google_event_id: str
+class MeetingBase(BaseModel):
     title: str
     start_time: datetime
     end_time: datetime
-    is_online: bool
+    is_online: bool = False
     online_meeting_link: Optional[str] = None
     location: Optional[str] = None
     is_recorded: bool = False
     summary: Optional[str] = None
     participants: list[str] = []
+
+class MeetingCreate(MeetingBase):
+    pass
+
+class Meeting(MeetingBase):
+    model_config = ConfigDict(populate_by_name=True)
+    id: Optional[PyObjectId] = Field(alias="_id", serialization_alias="id", default=None)
+    user_id: str
+    google_event_id: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -53,6 +58,13 @@ class MeetingInDB(Meeting):
 class MeetingUpdate(BaseModel):
     summary: Optional[str] = None
     is_recorded: Optional[bool] = None
+    title: Optional[str] = None
+    start_time: Optional[datetime] = None
+    end_time: Optional[datetime] = None
+    is_online: Optional[bool] = None
+    online_meeting_link: Optional[str] = None
+    location: Optional[str] = None
+    participants: Optional[list[str]] = None
 
 class Token(BaseModel):
     access_token: str

@@ -57,13 +57,13 @@ async def login(user_credentials: UserLogin):
 @router.get("/google/url")
 async def login_google():
     return {
-        "url": f"https://accounts.google.com/o/oauth2/auth?response_type=code&client_id={settings.GOOGLE_CLIENT_ID}&redirect_uri={settings.GOOGLE_REDIRECT_URI}&scope=openid%20profile%20email&access_type=offline"
+        "url": f"{settings.GOOGLE_AUTH_URL}?response_type=code&client_id={settings.GOOGLE_CLIENT_ID}&redirect_uri={settings.GOOGLE_REDIRECT_URI}&scope=openid%20profile%20email&access_type=offline"
     }
 
 
 @router.get("/google/callback")
 async def auth_google(code: str):
-    token_url = "https://oauth2.googleapis.com/token"
+    token_url = settings.GOOGLE_TOKEN_URL
     data = {
         "code": code,
         "client_id": settings.GOOGLE_CLIENT_ID,
@@ -81,7 +81,7 @@ async def auth_google(code: str):
         access_token_google = token_data.get("access_token")
         refresh_token = token_data.get("refresh_token")
         
-        user_info_response = await client.get("https://www.googleapis.com/oauth2/v1/userinfo", headers={"Authorization": f"Bearer {access_token_google}"})
+        user_info_response = await client.get(settings.GOOGLE_USER_INFO_URL, headers={"Authorization": f"Bearer {access_token_google}"})
         if user_info_response.status_code != 200:
              raise HTTPException(status_code=400, detail="Failed to get user info from Google")
         user_info = user_info_response.json()
@@ -123,5 +123,5 @@ async def auth_google(code: str):
     
     # Redirect to frontend with token
     # Adjust this URL based on where the frontend handles the callback
-    frontend_url = "https://dancing-mantis-snore.onrender.com/auth/callback"
+    frontend_url = f"{settings.FRONTEND_URL}/auth/callback"
     return RedirectResponse(url=f"{frontend_url}?token={access_token}")

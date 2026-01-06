@@ -3,23 +3,22 @@ from typing import Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 from ..database.client import settings, get_database
 from ..models.schemas import TokenData, UserInDB
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 # We use OAuth2PasswordBearer to define the scheme, so FastAPI knows to look for
 # the token in the Authorization header (Bearer token).
-# The tokenUrl is just a placeholder here since we use Google OAuth, 
+# The tokenUrl is just a placeholder here since we use Google OAuth,
 # but it's required for the Swagger UI to know it's a Bearer token flow.
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+    # SIMPLIFIED: Direct string comparison (No encryption)
+    return plain_password == hashed_password
 
 def get_password_hash(password):
-    return pwd_context.hash(password)
+    # SIMPLIFIED: Return plain password (No encryption)
+    return password
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
