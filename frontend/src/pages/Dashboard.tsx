@@ -41,13 +41,18 @@ const Dashboard: React.FC<DashboardProps> = ({ onNotificationCountChange }) => {
       ]);
       
       // Filter out any meetings that don't have an ID to prevent rendering errors
-      const validMeetings = meetingsRes.data.filter((m: Meeting) => {
-        if (!m.id) {
-          console.warn('Fetched meeting without ID:', m);
-          return false;
-        }
-        return true;
-      });
+      let validMeetings: Meeting[] = [];
+      if (Array.isArray(meetingsRes.data)) {
+        validMeetings = meetingsRes.data.filter((m: Meeting) => {
+          if (!m.id) {
+            console.warn('Fetched meeting without ID:', m);
+            return false;
+          }
+          return true;
+        });
+      } else {
+        console.error("Unexpected API response format for meetings. Expected array, got:", meetingsRes.data);
+      }
 
       setMeetings(validMeetings);
       console.log("Raw meetings response length:", meetingsRes.data.length);
