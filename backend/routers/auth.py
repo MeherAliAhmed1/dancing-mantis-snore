@@ -96,7 +96,10 @@ async def auth_google(code: str = None, error: str = None):
     
     existing_user = await db.users.find_one({"email": user_info["email"]})
     
+    print(f"DEBUG: Processing Google User: {user_info.get('email')}")
+    
     if existing_user:
+        print(f"DEBUG: User exists. Updating: {user_info.get('email')}")
         # Update existing user
         update_data = {
             "full_name": user_info.get("name"),
@@ -111,18 +114,22 @@ async def auth_google(code: str = None, error: str = None):
             {"$set": update_data}
         )
     else:
+        print(f"DEBUG: User does not exist. Creating new user: {user_info.get('email')}")
         # Create new user
         new_user = UserInDB(
             email=user_info["email"],
-            google_id=user_info["id"],
+            google_id=user_info.get("id"),
             full_name=user_info.get("name"),
             picture=user_info.get("picture"),
-            refresh_token=refresh_token
+            refresh_token=refresh_token,
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow()
         )
         
         # We exclude 'id' because MongoDB will generate '_id'
         user_dict = new_user.model_dump(by_alias=True, exclude={"id"})
-        await db.users.insert_one(user_dict)
+        result = await db.users.insert_one(user_dict)
+        print(f"DEBUG: New user created with ID: {result.inserted_id}")
         
     # Create backend JWT
     access_token = create_access_token(data={"sub": user_info["email"]})

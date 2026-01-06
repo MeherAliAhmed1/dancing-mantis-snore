@@ -134,17 +134,22 @@ async def get_meetings(
         start_time = datetime.combine(date_query, time.min)
         end_time = datetime.combine(date_query, time.max)
     else:
-        print("DEBUG: Using default date range (last 30 days)")
-        # Default: Last 30 days + Today (Expanded for visibility)
+        print("DEBUG: Using default date range (last 30 days + next 30 days)")
+        # Default: Last 30 days + Next 30 days to ensure future meetings are visible
+        # This handles timezone differences where user's 'today' might be server's 'tomorrow'
         today = datetime.now().date()
         past_date = today - timedelta(days=30)
+        future_date = today + timedelta(days=30)
         start_time = datetime.combine(past_date, time.min)
-        end_time = datetime.combine(today, time.max)
+        end_time = datetime.combine(future_date, time.max)
     
     print(f"DEBUG: Querying range {start_time} to {end_time}")
     
+    # Handle user_id which might be an ObjectId or string depending on registration method
+    user_id_query = str(current_user.id)
+    
     query = {
-        "user_id": str(current_user.id),
+        "user_id": user_id_query,
         "start_time": {"$gte": start_time, "$lte": end_time}
     }
     print(f"DEBUG: Query object: {query}")

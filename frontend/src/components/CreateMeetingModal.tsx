@@ -47,6 +47,8 @@ const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
 
       const meetingData = {
         title,
+        // Send as ISO string, but make sure it preserves local time intent if possible,
+        // or just standard ISO. The backend should handle storing it correctly.
         start_time: startDateTime.toISOString(),
         end_time: endDateTime.toISOString(),
         participants: participants.split(',').map(p => p.trim()).filter(p => p),
