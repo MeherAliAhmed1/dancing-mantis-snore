@@ -59,14 +59,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNotificationCountChange }) => {
       console.log("Fetched meetings count:", validMeetings.length);
       console.log("First meeting start:", validMeetings[0]?.start_time);
       console.log("Last meeting start:", validMeetings[validMeetings.length - 1]?.start_time);
-      
-      let validNextSteps: NextStep[] = [];
-      if (Array.isArray(nextStepsRes.data)) {
-        validNextSteps = nextStepsRes.data;
-      } else {
-        console.error("Unexpected API response format for nextSteps. Expected array, got:", nextStepsRes.data);
-      }
-      setNextSteps(validNextSteps);
+      setNextSteps(nextStepsRes.data);
     } catch (error) {
       console.error("Failed to fetch dashboard data", error);
     }
