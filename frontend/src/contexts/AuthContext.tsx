@@ -45,21 +45,40 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
+    // Check for string 'undefined' which might have been stored by mistake
+    if (token && token !== 'undefined' && token !== 'null') {
       fetchUser();
     } else {
+      // Clean up invalid tokens
+      if (token === 'undefined' || token === 'null') {
+        localStorage.removeItem('token');
+      }
       setIsLoading(false);
     }
   }, []);
 
   const login = async (data: any) => {
     const response = await auth.login(data);
+    console.log('[Auth] Login response:', response.data);
+    
+    if (!response.data || !response.data.access_token) {
+      console.error('[Auth] Invalid login response - missing access_token');
+      throw new Error('Invalid response from server. Check console for details.');
+    }
+    
     localStorage.setItem('token', response.data.access_token);
     await fetchUser();
   };
 
   const register = async (data: any) => {
     const response = await auth.register(data);
+    console.log('[Auth] Register response:', response.data);
+
+    if (!response.data || !response.data.access_token) {
+      console.error('[Auth] Invalid register response - missing access_token');
+      throw new Error('Invalid response from server. Check console for details.');
+    }
+
     localStorage.setItem('token', response.data.access_token);
     await fetchUser();
   };

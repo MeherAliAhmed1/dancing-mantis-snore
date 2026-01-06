@@ -41,20 +41,39 @@ const Dashboard: React.FC<DashboardProps> = ({ onNotificationCountChange }) => {
       ]);
       
       // Filter out any meetings that don't have an ID to prevent rendering errors
-      const validMeetings = meetingsRes.data.filter((m: Meeting) => {
-        if (!m.id) {
-          console.warn('Fetched meeting without ID:', m);
-          return false;
+      // Check if meetingsRes.data is an array before filtering
+      if (!Array.isArray(meetingsRes.data)) {
+        console.error("Unexpected API response format for meetings. Expected array, got:", meetingsRes.data);
+        // If we got HTML (likely 404 page), it usually means API routing is broken
+        if (typeof meetingsRes.data === 'string' && meetingsRes.data.trim().startsWith('<')) {
+             console.error("API Error: Received HTML instead of JSON. Check API_URL and routing configuration.");
         }
-        return true;
-      });
-
-      setMeetings(validMeetings);
+        setMeetings([]); // Fallback to empty array
+      } else {
+        // Filter out any meetings that don't have an ID to prevent rendering errors
+        const validMeetings = meetingsRes.data.filter((m: Meeting) => {
+            if (!m.id) {
+            console.warn('Fetched meeting without ID:', m);
+            return false;
+            }
+            return true;
+        });
+        setMeetings(validMeetings);
+        console.log("Raw meetings response length:", meetingsRes.data.length);
+        console.log("Fetched meetings count:", validMeetings.length);
+        console.log("First meeting start:", validMeetings[0]?.start_time);
+        console.log("Last meeting start:", validMeetings[validMeetings.length - 1]?.start_time);
+      }
       console.log("Raw meetings response length:", meetingsRes.data.length);
       console.log("Fetched meetings count:", validMeetings.length);
       console.log("First meeting start:", validMeetings[0]?.start_time);
       console.log("Last meeting start:", validMeetings[validMeetings.length - 1]?.start_time);
-      setNextSteps(nextStepsRes.data);
+      if (Array.isArray(nextStepsRes.data)) {
+          setNextSteps(nextStepsRes.data);
+      } else {
+          console.error("Unexpected API response format for nextSteps. Expected array, got:", nextStepsRes.data);
+          setNextSteps([]);
+      }
     } catch (error) {
       console.error("Failed to fetch dashboard data", error);
     }
