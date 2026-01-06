@@ -62,7 +62,13 @@ async def login_google():
 
 
 @router.get("/google/callback")
-async def auth_google(code: str):
+async def auth_google(code: str = None, error: str = None):
+    if error:
+        raise HTTPException(status_code=400, detail=f"Google Login Error: {error}")
+        
+    if not code:
+        raise HTTPException(status_code=400, detail="Login failed: No authorization code received from Google.")
+
     token_url = settings.GOOGLE_TOKEN_URL
     data = {
         "code": code,
