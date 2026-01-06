@@ -13,8 +13,14 @@ export const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
+    console.log(`[API] Request to ${config.url} method=${config.method}`);
+    console.log('[API] Request Data:', config.data);
+    console.log('[API] Request Params:', config.params);
     if (token) {
+      console.log('[API] Attaching JWT token:', token);
       config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      console.log('[API] No token found in localStorage');
     }
     return config;
   },
